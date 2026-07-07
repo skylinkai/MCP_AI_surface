@@ -2,7 +2,7 @@
 
 Python implementation of a universal **MCP aggregation platform**.
 
-The full project lives in [`mcp-platform/`](mcp-platform/).
+The full project lives in (https://github.com/skylinkai/MCP_AI_surface/tree/main/MCP_AI_surface)
 
 ## Quick start
 
