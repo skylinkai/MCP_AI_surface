@@ -1,0 +1,28 @@
+servers:
+  postgres-main:
+    type: mcp-server
+    url: http://localhost:3001
+    auth: service-token
+    auth_token: ${POSTGRES_MCP_TOKEN:-dev-postgres-token}
+    capabilities:
+      - query
+      - schema
+    enabled: true
+
+  filesystem-local:
+    type: mcp-server
+    url: http://localhost:3002
+    auth: service-token
+    auth_token: ${FILESYSTEM_MCP_TOKEN:-dev-fs-token}
+    capabilities:
+      - read
+      - list
+    enabled: true
+
+  rest-api:
+    type: mcp-server
+    url: http://localhost:3003
+    auth: none
+    capabilities:
+      - fetch
+    enabled: true

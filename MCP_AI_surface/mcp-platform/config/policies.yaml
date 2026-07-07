@@ -1,0 +1,14 @@
+policies:
+  - role: analyst
+    allow:
+      - query.postgres-main
+      - read_file.filesystem-local
+      - list_dir.filesystem-local
+      - fetch.rest-api
+      - registry.list_servers
+    deny: []
+
+  - role: admin
+    allow:
+      - "*"
+    deny: []

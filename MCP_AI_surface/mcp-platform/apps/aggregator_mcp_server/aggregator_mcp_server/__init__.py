@@ -1,0 +1,1 @@
+"""Aggregator MCP Server package."""

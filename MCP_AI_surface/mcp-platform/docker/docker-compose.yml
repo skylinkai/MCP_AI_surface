@@ -1,0 +1,71 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: mcp
+      POSTGRES_PASSWORD: mcp
+      POSTGRES_DB: mcp_demo
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mcp -d mcp_demo"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  postgres-mcp:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    environment:
+      SERVICE: postgres-mcp
+      PORT: "3001"
+      DATABASE_URL: postgresql://mcp:mcp@postgres:5432/mcp_demo
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  filesystem-mcp:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    environment:
+      SERVICE: filesystem-mcp
+      PORT: "3002"
+      FS_ROOT: /app/data
+    ports:
+      - "3002:3002"
+    volumes:
+      - ../data:/app/data:ro
+
+  rest-mcp:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    environment:
+      SERVICE: rest-mcp
+      PORT: "3003"
+      REST_ALLOWED_HOSTS: api.github.com,httpbin.org
+    ports:
+      - "3003:3003"
+
+  aggregator-mcp:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    environment:
+      SERVICE: aggregator
+      PORT: "8000"
+      AGGREGATOR_CONFIG: /app/config/registry.docker.yaml
+      MCP_POLICIES_PATH: /app/config/policies.yaml
+      LOG_LEVEL: INFO
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres-mcp
+      - filesystem-mcp
+      - rest-mcp
